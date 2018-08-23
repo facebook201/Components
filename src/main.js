@@ -7,8 +7,5 @@ Vue.config.productionTip = false;
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
-    render: h => {
-        console.log(h(App));
-        return h(App);
-    }
+    render: h => h(App)
 })
