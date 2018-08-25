@@ -1,0 +1,84 @@
+@import './common/var.styl';
+
+.sy-button
+  display inline-block
+  line-height 1
+  white-space nowrap
+  cursor pointer
+  background-color $-button-default-fill
+  color $-button-font-color
+  outline none 
+  text-align center
+  box-sizing border-box
+  -webkit-appearance none
+  margin 0
+  padding 12px 20px
+  border-radius 4px
+  font-size $-button-font-size
+  user-select none
+  &:hover,
+  &:focus
+    color $-button-primary-color
+    border-color $-button-primary-color
+    background-color $-button-primary-light-5
+  /* 主要按钮 */
+  &.sy-button-primary
+    background-color $-button-primary-color
+    border-color $-button-primary-color
+    color $-white-color
+  /* 成功按钮 */
+  &.sy-button-success
+    background-color $-button-success-color
+    border-color $-button-success-color
+    color $-white-color
+  /* 信息 */
+  &.sy-button-info
+    background-color $-button-info-color
+    border-color $-button-info-color
+    color $-white-color
+  /* 警告 */
+  &.sy-button-warning
+    background-color $-button-warning-color
+    border-color $-button-warning-color
+    color $-white-color
+  /* 危险 */
+  &.sy-button-danger
+    background-color $-button-danger-color
+    border-color $-button-danger-color
+    color $-white-color
+  &.is-disabled
+    background $-button-primary-hover-color
+    cursor not-allowed
+
+.sy-button-primary
+    &:hover,
+    &:focus
+      border-color $-button-primary-color
+      background $-button-primary-hover-color
+
+.sy-button-group
+  display inline-block
+  vertical-align middle
+  & .sy-button
+      float left
+      position relative
+      &:not(:first-child):not(:last-child)
+        border-radius 0
+      &:first-child
+        border-top-right-radius 0
+        border-bottom-right-radius 0
+      &:last-child
+        border-top-left-radius 0
+        border-bottom-left-radius 0
+      /* 不是最后一所有按钮都向右偏-1px */
+      &:not(:last-child)
+        margin-right -1px
+      &.sy-button-primary
+        &:first-child
+          border-right-color #fff
+        &:last-child
+          border-left-color #fff
+        /* 类型按钮加白条 */
+        &:not(:first-child):not(:last-child)
+          border-left-color #fff
+          border-right-color #fff

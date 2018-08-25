@@ -1,19 +1,16 @@
 <template>
   <div id="app">
-    {{name}}
-    <Test>
-      <div>我是默认slot</div>
-    </Test>
+    <button-test></button-test>
   </div>
 </template>
 
 <script>
-import Test from './Test.js';
+import ButtonTest from '@/example/componentsTest/ButtonTest';
 
 export default {
   name: 'SyApp',
   components: {
-    Test
+    ButtonTest
   },
   data() {
     return {

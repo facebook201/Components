@@ -3,9 +3,13 @@
 import Vue from 'vue';
 import App from './App';
 Vue.config.productionTip = false;
+import SyUI from '@/packages/index.js';
+import './packages/theme/index.styl';
+
+Vue.use(SyUI);
 
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
     render: h => h(App)
-})
+});

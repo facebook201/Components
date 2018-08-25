@@ -10,7 +10,6 @@
       @focus="focused = true"
       @blur="focused = false"
       :disabled="telDisabled">
-
       <label
         for="vcode"
         class="line"
@@ -24,7 +23,7 @@
 
 <script>
 export default {
-  name: 'vcode',
+  name: 'SyCode',
   data () {
     return {
       code: '', // 验证码内容
