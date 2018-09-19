@@ -1,4 +1,4 @@
-# VueComponents 命名为sy-components
+## sy-components
 平时项目中用的都是Vue 业务也多了 没有深入去学习Vue 也没有去写过基本组件。不深入学习 也就不知道自己有多渺小 多菜。所以这里一系列是阅读和学习Element-UI的组件源码 和 知识点。 然后来写一个自己的轮子组件。
 
 
