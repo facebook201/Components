@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <button-test></button-test>
+    <my-com :level="1">
+      
+    </my-com>
+    {{name}}
   </div>
 </template>
 
@@ -14,7 +17,14 @@ export default {
   },
   data() {
     return {
-      name: 'ss',
+      name: 'ss'
+    }
+  },
+  created() {
+  },
+  watch: {
+    name(val, newVal) {
+      console.log(val, newVal);
     }
   }
 }

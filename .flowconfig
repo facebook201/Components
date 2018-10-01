@@ -1,0 +1,13 @@
+[ignore]
+.*/node_modules/.*
+.*/test/.*
+.*/scripts/.*
+.*/examples/.*
+.*/benchmarks/.*
+
+[include]
+
+[libs]
+src
+
+[options]
