@@ -1,20 +1,29 @@
 <template>
-  <div id="app">
-    <sy-checkbox v-model="radio" label="1">1</sy-checkbox>
-    <sy-checkbox v-model="radio1" label="2">2</sy-checkbox>
+  <div id="app" ref="app">
+    <!-- <div class="mix-input">
+      <el-input placeholder="请输入内容" v-model="mixInput">
+        <template slot="prepend">http://</template>
+        <template slot="append">.com</template>
+      </el-input>
+    </div>     -->
+    <middle-ware minlength="23"></middle-ware>
+
   </div>
 </template>
 
 <script>
+import MiddleWare from './middleware.vue';
 
 export default {
   name: 'SyApp',
+  components: {
+    MiddleWare
+  },
   data() {
     return {
       name: 'ss',
       ss: '张三',
-      radio: false,
-      radio1: true
+      mixInput: '混合'
     }
   },
   methods: {
