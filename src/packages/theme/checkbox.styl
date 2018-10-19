@@ -1,0 +1,48 @@
+.el-checkbox
+  position relative
+  display inline-block
+  user-select none
+  font-size 14px
+  color #606266
+  font-weight 500
+  cursor pointer
+  white-space nowrap
+
+.el-checkbox__input
+  position relative
+  display inline-block
+  vertical-align middle
+  line-height 1
+  white-space nowrap
+  outline none
+  &.is-checked
+    .el-checkbox__inner
+      background-color #409eff
+      border-color #409eff
+      &::after
+        transform rotate(45deg) scaleY(1)
+
+.el-checkbox__inner
+  position relative
+  display inline-block
+  border 1px solid #dcdfe6
+  border-radius 2px
+  box-sizing border-box
+  width 14px
+  height 14px
+  z-index 1
+  transition border-color .25s cubic-bezier(.71, -.46, .29, 1.46 )
+  &::after
+    position absolute
+    top 1px
+    width 3px
+    left 4px
+    height 7px
+    box-sizing content-box
+    content ''
+    border 1px solid #fff
+    border-left 0
+    border-top 0
+    transform rotate(45deg) scaleY(0)
+    transition transform .15s ease-in .05s
+    transform center

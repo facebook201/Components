@@ -8,22 +8,10 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './packages/theme/index.styl';
 
-Vue.use(ElementUI);
+import SyUI from './packages';
 
-Vue.component('my-com', {
-  render: function (h){
-		return h(
-			'h' + this.level,
-			this.$slots.default
-		);
-	},
-	props: {
-		level: {
-			type: Number,
-			required: true
-		}
-  },
-});
+Vue.use(ElementUI);
+Vue.use(SyUI);
 
 /* eslint-disable no-new */
 new Vue({

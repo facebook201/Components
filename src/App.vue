@@ -1,30 +1,25 @@
 <template>
   <div id="app">
-    <my-com :level="1">
-      
-    </my-com>
-    {{name}}
+    <sy-checkbox v-model="radio" label="1">1</sy-checkbox>
+    <sy-checkbox v-model="radio1" label="2">2</sy-checkbox>
   </div>
 </template>
 
 <script>
-import ButtonTest from '@/example/componentsTest/ButtonTest';
 
 export default {
   name: 'SyApp',
-  components: {
-    ButtonTest
-  },
   data() {
     return {
-      name: 'ss'
+      name: 'ss',
+      ss: '张三',
+      radio: false,
+      radio1: true
     }
   },
-  created() {
-  },
-  watch: {
-    name(val, newVal) {
-      console.log(val, newVal);
+  methods: {
+    changeVal(val) {
+      console.log(val);
     }
   }
 }

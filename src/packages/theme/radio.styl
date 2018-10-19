@@ -1,0 +1,56 @@
+.sy-radio
+  position relative
+  display inline-block
+  white-space nowrap
+  color #606266
+  line-height 1
+  font-size 14px
+  font-weight 500
+  cursor pointer
+  user-select none
+
+.sy-radio__input
+  position relative
+  display inline-block
+  vertical-align middle
+  outline none
+  white-space nowrap
+
+.sy-radio__input
+  &.is-checked
+    .sy-radio__inner
+      background-color #409eff
+      border-color #409eff
+      &::after
+        transform translate(-50%, -50%) scale(1)
+
+.sy-radio__inner
+  position relative
+  display inline-block
+  height 14px 
+  width 14px
+  border-radius 100%
+  border 1px solid #dcdfe6
+  box-sizing border-box
+  &::after
+    position absolute
+    width 4px
+    height 4px
+    border-radius 100%
+    background-color #fff
+    content ''
+    left 50%
+    top 50%
+    transform translate(-50%, -50%) scale(0)
+    transition transform .15s ease-in
+
+.sy-radio__original
+  position absolute
+  z-index -1
+  top 0
+  left 0
+  right 0
+  bottom 0
+  margin 0
+  opacity 0
+  outline none

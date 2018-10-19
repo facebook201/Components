@@ -25,6 +25,7 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
+      'sy': path.resolve(__dirname, '../')
     }
   },
   module: {
@@ -33,6 +34,10 @@ module.exports = {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: vueLoaderConfig
+      },
+      {
+        test: /\.jsx$/,
+        loader: 'babel-loader'
       },
       {
         test: /\.js$/,
