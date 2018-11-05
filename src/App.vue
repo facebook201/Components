@@ -1,35 +1,30 @@
 <template>
   <div id="app" ref="app">
-    <!-- <div class="mix-input">
-      <el-input placeholder="请输入内容" v-model="mixInput">
-        <template slot="prepend">http://</template>
-        <template slot="append">.com</template>
-      </el-input>
-    </div>     -->
-    <middle-ware minlength="23"></middle-ware>
+
+    <v-upload
+      :action="actionUrl">
+      <el-button type="primary">上传图片</el-button>
+    </v-upload>
 
   </div>
 </template>
 
 <script>
-import MiddleWare from './middleware.vue';
+import VUpload from './packages/upload';
 
 export default {
   name: 'SyApp',
   components: {
-    MiddleWare
+    VUpload
   },
   data() {
     return {
-      name: 'ss',
-      ss: '张三',
-      mixInput: '混合'
-    }
+      cell: '',
+      actionUrl: 'http://jsonplaceholder.typicode.com/posts/'
+    };
   },
   methods: {
-    changeVal(val) {
-      console.log(val);
-    }
+
   }
 }
 </script>
@@ -39,3 +34,4 @@ export default {
   margin-top: 60px;
 }
 </style>
+

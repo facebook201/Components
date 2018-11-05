@@ -277,14 +277,19 @@ export default class TreeStore {
     this._setCheckedKeys(key, leafOnly, checkedKeys);
   }
 
+  /** 通过keys 来设置勾选的节点 确保设置node-key属性
+   * @param {keys} 勾选节点的数组
+   * @param {leafOnly} 默认false 如果是真 仅设置叶子节点的选中状态
+   */
   setCheckedKeys(keys, leafOnly = false) {
+    // 把勾选节点的数组 赋给默认勾选的keys值
     this.defaultCheckedKeys = keys;
     const key = this.key;
     const checkedKeys = {};
     keys.forEach((key) => {
       checkedKeys[key] = true;
     });
-
+    
     this._setCheckedKeys(key, leafOnly, checkedKeys);
   }
 

@@ -4,14 +4,15 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 Vue.config.productionTip = false;
-import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import './packages/theme/index.styl';
+// import './packages/theme/index.styl';
+import ElementUI from './element';
 
-import SyUI from './packages';
+import dayjs from 'dayjs';
+// import SyUI from './packages';
 
 Vue.use(ElementUI);
-Vue.use(SyUI);
+// Vue.use(SyUI);
 
 /* eslint-disable no-new */
 new Vue({

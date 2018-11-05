@@ -1,4 +1,4 @@
-bexport default {
+export default {
   name: 'ElRow',
 
   componentName: 'ElRow',

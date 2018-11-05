@@ -43,7 +43,7 @@
 
       <!-- 前置内容 icon -->
       <span class="sy-input__prefix" v-if="$slots.prefix || prefixIcon">
-        <slot name="prefix"><slot>
+        <slot name="prefix"></slot>
         <i class="sy-input__icon"
           v-if="prefixIcon"
           :class="prefixIcon">
@@ -83,12 +83,91 @@
 
 <script>
 import emitter from 'sy/src/mixins/emitter';
-import Migrating from 'sy/src/mixins/migrating';
-import merge from 'sy/src/utils/merge';
-import { isKorean } from 'sy/src/utils/shared';
+// import Migrating from 'sy/src/mixins/migrating';
+// import merge from 'sy/src/utils/merge';
 
 export default {
+  name: 'SyInput',
+  
+  componentName: 'SyInput',
 
+  mixins: [emitter],
+
+  inheritAttrs: false,
+
+  data() {
+    return {
+      currentValue: this.value == null
+        ? ''
+        : this.value,
+      hovering: false,
+      focused: false,
+      isOnComposition: false,
+      valueBeforeComposition: null
+    };
+  },
+
+  props: {
+    value: [String, Number],
+    tabindex: String,
+    readonly: Boolean,
+    clearable: {
+      type: Boolean,
+      default: false
+    },
+    label: String,
+    suffixIcon: String,
+    prefixIcon: String,
+    type: {
+      type: String,
+      default: 'text'
+    }
+  },
+
+  computed: {
+    // 输入框
+    inputDisabled() {
+      return this.disabled || (this.elForm || {}).disabled;
+    },
+
+    showClear() {
+      // 显示删除 满足下面的条件
+      return this.clearable &&
+        !this.disabled &&
+        !this.readonly &&
+        this.currentValue !== '' &&
+        (this.focused || this.hovering);
+    }
+  },
+
+  watch: {
+    value(val, olaValue) {
+      this.setCurrentValue(val);
+    }
+  },
+
+  methods: {
+    focus() {
+      (this.$refs.input || this.$refs.textarea).focus();
+    },
+    blur() {
+      (this.$refs.input || this.$refs.textarea).blur();
+    },
+    // 触发input事件
+    handleInput(event) {
+      const value = event.target.value;
+      this.setCurrentValue(value);
+      this.$emit('input', value);
+    },
+    setCurrentValue(value) {
+      // 这里的逻辑比较多 主要是通过元素的
+      this.currentValue = value;
+    },
+    // 触发hange事件
+    handleChange(event) {
+      this.$emit('change', event.target.value);
+    }
+  }
 };
 </script>
 

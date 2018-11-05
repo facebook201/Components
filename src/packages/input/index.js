@@ -1,7 +1,7 @@
-import ElInput from './src/input';
+import SyInput from './src/input';
 
-ElInput.install = function(Vue) {
-  Vue.component(ElInput.name, ElInput);
+SyInput.install = function(Vue) {
+  Vue.component(SyInput.name, SyInput);
 };
 
-export default ElInput;
+export default SyInput;
