@@ -54,7 +54,7 @@ Blob对象表示一个不可变 原始数据的类文件对象。 File接口基�
 
 
 
-##### FileReader
+##### 图片缩略图 FileReader
 
 从blob中读取内容的唯一方法就是使用 FileReader。 FileReader 接口有四个方法。 其中三个用来读取文件。 
 
@@ -86,4 +86,37 @@ Blob对象表示一个不可变 原始数据的类文件对象。 File接口基�
     }
   }, false);
 ```
+
+
+
+#### 图片缩略图 URL
+
+URL可以不像FileReader那样转成一个base64那么长的字符串。 URL可以直接返回提供一个地址给img元素的src属性值。
+
+**URL接口用来创建URL对象 有两个方法**
+
+* createObjectURL 传入一个File或者Blob对象 返回一个DOMString 这个字符串可以用来展示我们的内容
+* revokeObjectURL 用来销毁通过createObjectURL创建的DOMString
+
+
+
+```javascript
+handleChange = event => {
+   	event.preventDefault();
+    const { files } = this.state;
+    Array.prototype.forEach.call(this.fileInput.files, file => {
+       // 一句代码就可以直接返回src给img的src属性 
+       const src = URL.createObjectURL(file);
+       file.src = src;
+       this.setState({
+         files: [...files, file]     
+       });
+        this.fileInput.value = '';
+    });
+};
+```
+
+
+
+
 

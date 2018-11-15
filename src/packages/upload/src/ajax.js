@@ -1,7 +1,7 @@
 
 // 错误获取
 
-function getError(action, option, hr) {
+function getError(action, option, xhr) {
   let msg;
   if (xhr.response) {
     msg = `${xhr.response.error || xhr.response}`;
@@ -39,7 +39,7 @@ export default function upload(option) {
 
   const xhr = new XMLHttpRequest();
   // 请求地址
-  const action = option.axtion;
+  const action = option.action;
 
   if (xhr.upload) {
     xhr.upload.onprogress = function progress(e) {
@@ -59,7 +59,7 @@ export default function upload(option) {
     });
   }
 
-  formData.append(option.filename, option.file, option.file.name);
+  formdata.append(option.filename, option.file, option.file.name);
 
   xhr.onerror = function error(e) {
     option.onError(e);
@@ -85,7 +85,6 @@ export default function upload(option) {
       xhr.setRequestHeader(item, headers[item]);
     }
   }
-
-  xhr.send(formData);
+  xhr.send(formdata);
   return xhr;
 };

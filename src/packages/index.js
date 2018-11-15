@@ -5,13 +5,15 @@ import Radio from './radio';
 import Checkbox from './checkbox';
 // import Tree from './tree';
 import Input from './input'
+import InputNumber from './input-number';
 
 const components = [
     Button,
     ButtonGroup,
     Radio,
     Checkbox,
-    Input
+    Input,
+    InputNumber
 ];
 
 // 定义一个安装方法给 Vue.use
@@ -36,7 +38,8 @@ const SyUI = {
     ButtonGroup,
     Radio,
     Checkbox,
-    Input
+    Input,
+    InputNumber
 };
 
 export default SyUI;
