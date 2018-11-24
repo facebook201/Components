@@ -1,172 +1,128 @@
 <script>
-import ajax from './ajax';
-
-function noop() {}
+import SUploadDragger from './upload-dragger';
+import httpRequest from './ajax';
 
 export default {
-  name: 'Upload',
+  name: 'upload',
 
-  inject: ['uploader'],
-
+  components: {
+    SUploadDragger
+  },
+  
   props: {
+    // 上传类型
     type: String,
-    // 上传地址
+    // 上传接口地址
     action: {
       type: String,
-      default: ''
+      required: true
     },
     name: {
       type: String,
       default: 'file'
     },
+    // 上传带的额外参数
     data: Object,
     headers: Object,
+    // cookies 凭证
     withCredentials: Boolean,
-    multiple: Boolean,
+    multiple: Boolean, 
     accept: String,
     onStart: Function,
+    // 上传进度
     onProgress: Function,
-    onSuccess: Function,
+    // 上传失败
     onError: Function,
+    // 成功
+    onSuccess: Function,
+    // 上传之前的操作
     beforeUpload: Function,
+    // 是否启用拖动
     drag: Boolean,
     onPreview: {
       type: Function,
-      default: noop
+      default: function() {}
     },
     onRemove: {
       type: Function,
-      default: noop
+      default: function() {}
     },
+    // 文件队列
     fileList: Array,
-    autoUpload: {
-      type: Boolean,
-      default: true
-    },
-    // 上传类型 
+    // 是否在选中文件之后立即上传
+    autoUpload: Boolean,
+    disabled: Boolean,
     listType: String,
     httpRequest: {
       type: Function,
-      default: ajax
+      default: httpRequest
     },
-    disabled: Boolean,
     limit: Number,
+    // 超出文件限制时的钩子
     onExceed: Function
   },
 
   data() {
     return {
       mouseover: false,
+      // 保存返回的结果
       reqs: {}
     };
   },
 
   methods: {
+    // 是否是图片格式
     isImage(str) {
-      return str.indexOf('image') > -1;
+      return str.indexOf('images') !== -1;
     },
-
-    // 触发change事件
-    handleChange(eve) {
-      const files = eve.target.files;
-
+    handleChange(e) {
+      const files = e.target.files;
       if (!files) return;
-      this.uploadFile(files);
+      this.uploadFiles(files);
     },
-
-    uploadFile(files) {
-      // 上传数量限制 limit onExceed 限制的钩子函数
-      if (this.limit && this.fileList.length + files.length > this.limit) {
+    // 上传文件
+    uploadFiles(files) {
+      // 上传文件之前 限制参数个数
+      if (this.limit && this.fileList.length + files.length > limit) {
         this.onExceed && this.onExceed(files, this.fileList);
         return;
       }
-      // 转数组
-      let postFiles = Array.prototype.slice.call(files);
-      // 浅拷贝一份
-      if (!this.multiple){ postFiles = postFiles.slice(0, 1) }
-      if (postFiles.length === 0) { return; }
-
+      let postFiles = [].slice.call(files);
+      // 不支持多选
+      if (!this.multiple) {
+        postFiles = postFiles.slice(0, 1);
+      }
+      if (postFiles.length === 0) retun;
+      // 开始一个个上传
       postFiles.forEach(rawFile => {
-        // 开始上传事件
+        // 开始上传
         this.onStart(rawFile);
-        // autoUpload 默认自动上传 也可手动上传 等到选取到文件之后 统一手动上传
+        // autoUpload 表示自动上传默认 true
         if (this.autoUpload) this.upload(rawFile);
       });
     },
 
-    abort(file) {
-      const { reqs } = this;
-    },
-
-    // 上传
+    // 开始上传
     upload(rawFile) {
       this.$refs.input.value = null;
-      // 如果不存在 上传之前的钩子
-      // 参数为上传的文件 若返回false 或返回promise且被reject 停止上传
+
+      // 开始上传 上传之前的处理
       if (!this.beforeUpload) {
         return this.post(rawFile);
       }
-      const before = this.beforeUpload(rawFile);
-      if (before && before.then) {
-        // 如果返回一个promise 且是reslove
-        before.then(processedFile => {
-          const fileType = Object.prototype.toString.call(processedFile);
-          
-          if (fileType === ['object File'] || fileType === ['object Blob']) {
-            if (fileType === ['object Blob']) {
-              processedFile = new File([processedFile], rawFile.name, {
-                type: rawFile.type
-              });
-            }
 
-            for (const p in rawFile) {
-              if (rawFile.hasOwnProperty(p)) {
-                processedFile[p] = rawFile[p];
-              }
-            }
-            this.post(processedFile);
-          } else {
-            this.post(rawFile);
-          }
-        }, () => {
-          this.onRemove(null, rawFile);
-        });
+      const before = this.beforeUpload(rawFile);
+
+      if (before && before.then) {
+
       } else if (before !== false) {
+        // 如果满足钩子的条件 再上传
         this.post(rawFile);
       } else {
-        this.onRemove(rnull, awFile);
+        // 否则就删除
+        this.onRemove(null, rawFile);
       }
-    },
 
-    // post 开始准备上传
-    post(rawFile) {
-      const { uid } = rawFile;
-
-      const options = {
-        headers: this.headers,
-        withCredentials: this.withCredentials,
-        file: rawFile,
-        data: this.data,
-        filename: this.name,
-        action: this.action,
-        onProgress: e => {
-          this.onProgress(e, rawFile);
-        },
-        onSuccess: res => {
-          this.onSuccess(res, rawFile);
-          delete this.reqs[uid];
-        },
-        onError: err => {
-          this.onError(err, rawFile);
-          delete this.reqs[uid];
-        }
-      };
-
-      const req = this.httpRequest(options);
-      this.reqs[uid] = req;
-      if (req && req.then) {
-        req.then(options.onSuccess, options.onError);
-      }
     },
 
     handleClick() {
@@ -174,17 +130,52 @@ export default {
         this.$refs.input.value = null;
         this.$refs.input.click();
       }
+    },
+    // 正式上传图片
+    post(rawFile) {
+      const { uid } = rawFile;
+
+      const option = {
+        headers: this.headers,
+        withCredentials: this.withCredentials,
+        action: this.action,
+        filename: this.name,
+        file: rawFile,
+        data: this.data, // 额外参数,
+        onError: e => {
+          this.onError(e, rawFile);
+        },
+        onSuccess: res => {
+          this.onSuccess(res, rawFile);
+        },
+        onProgress: e => {
+          this.onProgress(e);
+        }
+      };
+
+      const res = httpRequest(option);
+
+      this.reqs[uid] = res;
+      // res 返回可以是自己定义的promise之类的fetch请求
+      if (res && res.then) {
+        res.then(option.onSuccess, option.onError)
+      }
     }
   },
 
   render(h) {
     let {
+      handleChange,
       handleClick,
-      listType,
-      handleChange
+      name,
+      multiple,
+      drag,
+      accept,
+      disabled,
+      uploadFiles,
+      listType
     } = this;
-
-
+    
     const data = {
       class: {
         'el-upload': true,
@@ -193,18 +184,17 @@ export default {
         click: handleClick
       }
     };
-    
-	  data.class[`el-upload--${listType}`] = true;
-
+    data.class[`el-upload--${listType}`] = true;
     return (
-    	<div {...data} tabindex="0" >
+      <div {...data} tabindex="0">
         {
-          this.$slots.default
+          drag
+            ? <s-upload-dragger disabled={disabled} on-file={uploadFiles}> { this.$slots.default } </s-upload-dragger>
+            : this.$slots.default
         }
-      	<input ref="input" name={name} type="file" class="el-upload__input" on-change={handleChange}></input>
+        <input class="el-upload__input" type="file" ref="input" name={name} on-change={handleChange} multiple={multiple} accept={accept}></input> 
       </div>
     );
   }
 };
 </script>
-

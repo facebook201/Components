@@ -1,234 +1,248 @@
 <script>
-import upload from './upload';
+import Upload from './upload';
+import ajax from './ajax';
 
 function noop() {};
 
 export default {
-  name: 'VUpload',
+  name: 'SUpload',
 
+  // 包括可以拖动的 图片墙
   components: {
-    upload
+    Upload
+  },
+  // 传递给子组件 下级组件
+  provide() {
+    return {
+      uploader: this
+    };
   },
 
-	provide() {
-		return {
-			uploader: this
-		};
-	},
+  inject: {
+    elForm: {
+      default: ''
+    }
+  },
 
-	inject: {
-		elForm: {
-			default: ''
-		}
-	},
+  props: {
+    action: {
+      type: String,
+      required: true
+    },
+    headers: {
+      type: Object,
+      default() {
+        return {};
+      }
+    },
 
-	props: {
-		action: {
-			type: String,
-			required: true
-		},
-		headers: {
-			type: Object,
-			default() {
-				return {};
-			}
-		},
-		data: Object,
-		multiple: Boolean,
-		name: {
-			type: String,
-			default: 'file'	
-		},
-		type: {
-			type: String,
-			default: 'select'
-		},
-		beforeUpload: Function,
-		onChange: {
-			type: Function,
-			default: noop
-		},
-		onError: {
-			type: Function,
-			default: noop
-		},
-		fileList: {
-			type: Array,
-			default() {
-				return [];
-			}
-		},
-		listType: {
-			type: String,
-			default: 'text'
-		},
-		httpRequest: Function,
-		limit: Number,
-		disabled: Boolean,
-		onExceed: {
-			type: Function,
-			default: noop
-		},
-		onProgress: {
-			type: Function,
-			default: noop
-		},
-		onSuccess: {
-			type: Function,
-			default: noop
-		}
-	},
+    data: Object,
+    drag: Boolean, // 是否启用拖拽上传
+    withCredentials: Boolean,
+    // 是否显示已上传文件列表
+    showFileList: {
+      type: Boolean,
+      default: true
+    },
+    // 接收类型
+    accept: String,
+    type: {
+      type: String,
+      default: 'select'
+    },
+    // 上传之前的钩子
+    beforeUpload: Function,
+    // 删除之前的钩子
+    beforeRemove: Function,
+    onRemove: {
+      type: Function,
+      default: noop
+    },
+    // 文件状态改变的钩子 添加文件 上传成功 上传失败都会调用
+    onChange: {
+      type: Function,
+      default: noop
+    },
+    onPreview: {
+      type: Function,
+      default: noop
+    },
+    // 上传成功
+    onSuccess: {
+      type: Function,
+      default: noop
+    },
+    onProgress: {
+      type: Function,
+      default: noop
+    },
+    onError: {
+      type: Function,
+      default: noop
+    },
+    // 已经上传的列表
+    fileList: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    autoUpload: {
+      type: Boolean,
+      default: true
+    },
+    listType: {
+      type: String,
+      default: 'text' // text picture picture-card
+    },
+    httpRequest: Function,
+    disabled: Boolean,
+    limit: Number,
+    onExceed: {
+      type: Function,
+      default: noop
+    }
+  },
 
-	data() {
-		return {
-			// 文件列表
-			uploadFiles: [],
-			tempIndex: 1
-		};
-	},
+  data() {
+    return {
+      // 要上传的图片队列
+      uploadFiles: [],
+      dragOver: false,
+      draging: false,
+      tempIndex: 1
+    };
+  },
 
-	computed: {
+  computed: {
+    uploadDisabled() {
+      return this.disabled || (this.elForm || {}).disabled;
+    }
+  },
 
-	},
+  methods: {
+    // 开始上传
+    handleStart(rawFile) {
+      rawFile.uid = Date.now() + this.tempIndex++;
+      
+      // 图片文件的相关信息 
+      let file = {
+        status: 'ready',
+        name: rawFile.name,
+        size: rawFile.size,
+        percentag: 0,
+        uid: rawFile.uid,
+        raw: rawFile
+      };
 
-	watch: {
-		fileList: {
-			// immediate 立即触发
-			immediate: true,
-			handler(fileList) {
-				let i = 0;
-				// fileList 是新的fileList值
-				this.uploadFiles = fileList.map(item => {
-					item.uid = item.uid || (Date.now() + this.tempIndex);
-					item.status = item.status || 'success';
-					return item;
-				});
-			}
-		}
-	},
+      try {
+        file.url = URL.createObjectURL(rawFile);
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+      this.uploadFiles.push(file);
+      this.onChange(file, this.uploadFiles);
+    },
 
-	methods: {
-		// 开始上传事件
-		handleStart(rawFile) {
-			rawFile.uid = Date.now() + this.tempIndex++;
-			let file = {
-				status: 'ready', // 上传的状态
-				name: rawFile.name,
-				size: rawFile.size,
-				percentage: 0,
-				uid: rawFile.uid,
-				raw: rawFile // 保存手动上传的文件
-			};
+    handleSuccess(res, rawFile) {
+      // 这里面返回成功组件传进来的钩子函数
+      const file = this.getFile(rawFile);
+      this.onSuccess(res, file, this.uploadFiles);
+    },
 
-			try {
-				file.url = URL.createObjectURL(rawFile);
-			} catch (err){
-				return;
-			}
-			this.uploadFiles.push(file);
-			// 文件改变时候的钩子 添加文件 上传成功失败都会调用
-			this.onChange(file, this.uploadFiles);
-		},
+    handleProgress(ev, rawFile) {
 
-		// 取消上传请求
-		abort(file) {
-			this.$refs['upload-inner'].abort(file);
-		},
+    },
 
-		clearFiles() {
-			this.uploadFiles = [];
-		},
+    handleError(e, rawFile) {
 
-		handleSuccess(res, rawFile) {
-			const file = this.getFile(rawFile);
+    },
 
-			if (file) {
-				file.status = 'success';
-				file.response = res;
-				this.onSuccess(res, file, this.uploadFiles);
-				this.onChange(file, this.uploadFiles);
-			}
-		},
+    // 删除
+    handleRemove(file, raw) {
+      if (raw) {
+        file = this.getFile(raw);
+      }
 
-		handleError(err, rawFile) {
-			const file = this.getFile(rawFile);
-			const fileList = this.uploadFiles;
+      let doRemove = () => {
+        this.abort(file);
+        let fileList = this.uploadFiles;
+        // 移除最近添加的那个
+        fileList.splice(fileList.indexOf(file), 1);
+        this.onRemove(file, fileList);
+      };
 
-			file.status = 'fail';
-			fileList.splice(fileList.indexOf(file), 1);
+      // 如果存在beforeRemove 钩子
+      if (!this.beforeRemove) {
+        doRemove();
+      } else if (typeof this.beforeRemove === 'function') {
+        const before = this.beforeRemove(file, this.uploadFiles);
+        if (before && before.then) {
+          before.then(() => {
+            doRemove();
+          }, noop);
+        } else if (before !== false) {
+          doRemove();
+        }
+      }
+    },
 
-			this.onError(err, file, this.uploadFiles);
-			this.onChange(file, this.uploadFiles);
-		},
+    abort() {
+      this.$refs['upload-inner'].abort(file);
+    },
 
-		handleProgress(e, file) {
-			this.onProgress(e, file);
-		},
+    getFile(rawFile) {
+      // uploadFiles 里面包含的是所有上传成功的图片 
+      // uid 的作用也是为了找到刚刚上传的那张 从所有图片里面找到
+      let fileList = this.uploadFiles;
+      let target;
+      // 找到目标之后立即返回false
+      fileList.every(item => {
+        target = rawFile.uid === item.uid ? item : null;
+        // 如果找到就返回false
+        return !target;
+      });
+      return target;
+    }
+  },
 
-		getFile(rawFile) {
-			let fileList = this.uploadFiles;
-			let target;
-			// 
-			fileList.every(item => {
-				target = rawFile.uid === item.uid ? item : null;
-				return !target;
-			});
-			return target;
-		},
+  render() {
+    
+    const uploadData = {
+      props: {
+        type: this.type,
+        drag: this.drag,
+        action: this.action,
+        multiple: this.multiple,
+        'before-upload': this.beforeUpload,
+        'with-credentials': this.withCredentials,
+        headers: this.headers,
+        name: this.name,
+        data: this.data,
+        accept: this.accept,
+        fileList: this.fileList,
+        disabled: this.uploadDisabled,
+        limit: this.limit,
+        'on-start': this.handleStart,
+        'on-success': this.handleSuccess,
+        'on-progress': this.handleProgress,
+        'on-error': this.handleError,
+        'on-remove': this.handleRemove,
+        autoUpload: this.autoUpload
+      },
+      ref: 'upload-inner'
+    };
 
-		// 手动上传
-		submit() {
-			this.uploadFiles.filter(file => file.status === 'ready')
-				.forEach(file => {
-					this.$refs['upload-inner'].upload(file.raw);
-				})
-		}
-	},
+    const uploadComponent = <upload { ...uploadData } > { this.$slots.default } </upload>;
 
-  render(h) {
-		// 照片墻
-		let uploadList;
-
-		const uploadData = {
-			props: {
-				type: this.type, // 类型
-				drag: this.drag, // 是否可拖动
-				action: this.action, // 上传地址 必传参数
-				multiple: this.multiple, // 是否支持多选文件
-				'before-upload': this.xw, // 上传之前的钩子函数
-				'with-credentials': this.withCredentials, // 支持发送cookies 凭证
-				headers: this.headers,
-				name: this.name, // 上传的字段名
-				data: this.data, // 上传附带的额外参数
-				accept: this.accept, // 接受上传的类型
-				fileList: this.uploadFiles, // 上传文件列表
-				autoUpload: this.autoUpload, // 是否在选中文件后立即上传
-				listType: this.listType, // 文件列表的类型 text 文字 picture 图片 picture-card 照片墙
-				limit: this.limit, // 上传限制个数
-				disabled: this.uploadDisabled, // 是否禁用
-				'on-exceed': this.onExceed, //
-				'on-start': this.handleStart,
-				'on-progress': this.handleProgress,
-				'on-success': this.handleSuccess,
-				'on-error': this.handleError,
-				'on-preview': this.onPreview,
-				'on-remove': this.handleRemove,
-				'http-request': this.httpRequest
-			},
-			ref: 'upload-inner'
-		};
-		
-		const trigger = this.$slots.trigger || this.$slots.default;
-		const uploadComponent = <upload {...uploadData}> {trigger} </upload>;
-
-		return (
-			<div>
-				{ this.listType === 'picture-card' ? uploadList : '' }
-				{
-					uploadComponent
-				}
-			</div>
-		);
+    return (
+      <div>
+        { this.listType === 'picture-card' ? uploadList : '' }
+        { uploadComponent }
+        { this.$slots.tip }
+      </div>
+    );
   }
 };
 </script>

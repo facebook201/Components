@@ -1,7 +1,7 @@
-import Upload from './src';
+import SUpload from './src';
 
-Upload.install = function(Vue) {
-  Vue.components(Upload.name, Upload);
+SUpload.install = function(Vue) {
+  Vue.component(SUpload.name, SUpload);
 };
 
-export default Upload;
+export default SUpload;

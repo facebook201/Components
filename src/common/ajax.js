@@ -60,6 +60,8 @@ export default function upload(option) {
     });
   }
   
+  console.log(option);
+
   formdata.append(option.filename, option.file, option.file.name);
 
   // 获取失败
@@ -78,7 +80,7 @@ export default function upload(option) {
     option.onSuccess(getBody(xhr));
   };
 
-  xhr.open('post', action, true);
+  xhr.send(formdata);
 
   // 处理跨越的时候支持cookie凭证 如果传了这个参数为真 且 xhr支持该属性
   if (option.withCredentials && 'withCredentials' in xhr) {
@@ -93,8 +95,6 @@ export default function upload(option) {
       xhr.setRequestHeader(item, headers[item]);
     }
   }
-
-  xhr.send(formdata);
-  
-  return xhr;
 }
+
+
