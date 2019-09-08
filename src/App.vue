@@ -1,68 +1,18 @@
 <template>
-  <div id="app" ref="app">
-    <!-- 上传图片组件 -->
-
-    <!-- <s-upload
-      class="avatar-uploader"
-      action="https://jsonplaceholder.typicode.com/posts"
-      :before-upload="beforeUploadAvatar"
-      :on-success="handleAvatarSuccess"
-      >
-      <img :src="imgUrl" v-if="imgUrl" class="avatar">
-      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-    </s-upload> -->
-
-    <s-upload
-      class="avatar-uploader"
-      action="https://jsonplaceholder.typicode.com/posts"
-      :before-upload="beforeUploadAvatar"
-      :on-success="handleAvatarSuccess"
-      drag
-      accept="image/jpeg"
-      multiple
-      >
-      <i class="el-icon-upload"></i>
-      <div class="el-upload__text">将文件拖到此处上传</div> 
-    </s-upload>
-
+  <div id="app">
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import SUpload from './packages/upload';
 
 export default {
   name: 'SyApp',
-
-  components: {
-    SUpload
-  },
 
   data() {
     return {
       imgUrl: ''
     };
-  },
-
-  created() {
-    this.imgType = ['jpeg', 'png', 'gif'];
-  },
-
-  methods: {
-    beforeUploadAvatar(file) {
-      const isJPG = file.type === 'image/jpeg';
-
-      if (!isJPG) {
-        this.$message.error('头像只能是JPG格式!')
-      }
-
-      return isJPG;
-    },
-
-    handleAvatarSuccess(res, file) {
-      console.log(URL.createObjectURL(file.raw));
-      this.imgUrl = URL.createObjectURL(file.raw);
-    }
   }
 }
 </script>
